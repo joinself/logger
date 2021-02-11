@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"fmt"
+	"context"
 
 	"github.com/rs/zerolog"
 	zl "github.com/rs/zerolog/log"
@@ -9,6 +9,7 @@ import (
 
 const (
 	// Log levels on GCP (https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#logseverity)
+
 	// DEFAULT logging level.
 	DEFAULT = 0
 	// DEBUG logging level.
@@ -29,11 +30,29 @@ const (
 	EMERGENCY = 800
 )
 
-// L log line.
-type L struct {
-	Body      string
-	SessionID string
-	SelfID    string
+// Message represents a log message
+type Message struct {
+	e *zerolog.Event
+}
+
+// Msg outputs a message
+func (m *Message) Msg(msg string) {
+	m.e.Msg(msg)
+}
+
+// Context adds values from a context to the log message
+func (m *Message) Context(ctx context.Context) *Message {
+	sessionID := ctx.Value("session_id")
+	if sessionID != nil {
+		m.e.Str("session_id", sessionID.(string))
+	}
+
+	selfID := ctx.Value("self_id")
+	if selfID != nil {
+		m.e.Str("self_id", selfID.(string))
+	}
+
+	return m
 }
 
 // New creates a new Logger.
@@ -50,81 +69,38 @@ func SetGlobalLevel(level int) {
 }
 
 // Debug or trace information.
-func Debug(l L) {
-	logEvent(DEBUG, l)
+func Debug() *Message {
+	return &Message{zl.Debug().Int("severity", DEBUG)}
 }
 
 // Info routine information, such as ongoing status or performance.
-func Info(l L) {
-	logEvent(INFO, l)
+func Info() *Message {
+	return &Message{zl.Info().Int("severity", INFO)}
 }
 
 // Warn events might cause problems.
-func Warn(l L) {
-	logEvent(WARNING, l)
+func Warn() *Message {
+	return &Message{zl.Warn().Int("severity", WARNING)}
 }
 
 // Warning events might cause problems.
-func Warning(l L) {
-	Warn(l)
+func Warning() *Message {
+	return Warn()
 }
 
 // Error events are likely to cause problems.
-func Error(l L) {
-	logEvent(ERROR, l)
+func Error() *Message {
+	return &Message{zl.Error().Int("severity", ERROR)}
 }
 
 // Fatal critical events cause more severe problems or outages.
-func Fatal(l L) {
-	logEvent(CRITICAL, l)
+func Fatal() *Message {
+	return &Message{zl.Fatal().Int("severity", CRITICAL)}
 }
 
 // Panic a person must take an action immediately.
-func Panic(l L) {
-	logEvent(ALERT, l)
-}
-
-func logEvent(level int, l L) {
-	ev := buildEvent(level)
-	if ev == nil {
-		return
-	}
-	ev.Int("severity", level)
-
-	if l.SessionID != "" {
-		ev.Str("session_id", fmt.Sprint(l.SessionID))
-	}
-
-	if l.SelfID != "" {
-		ev.Str("self_id", fmt.Sprint(l.SelfID))
-	}
-
-	ev.Msg(l.Body)
-}
-
-func buildEvent(level int) *zerolog.Event {
-	switch level {
-	case DEFAULT:
-		return zl.Info()
-	case DEBUG:
-		return zl.Debug()
-	case INFO:
-		return zl.Info()
-	case NOTICE:
-		return zl.Info()
-	case WARNING:
-		return zl.Warn()
-	case ERROR:
-		return zl.Error()
-	case CRITICAL:
-		return zl.Fatal()
-	case ALERT:
-		return zl.Panic()
-	case EMERGENCY:
-		return zl.Panic()
-	default:
-		return zl.Info()
-	}
+func Panic() *Message {
+	return &Message{zl.Panic().Int("severity", ALERT)}
 }
 
 func parseLevel(level int) zerolog.Level {
