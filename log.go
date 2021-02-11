@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/rs/zerolog"
 	zl "github.com/rs/zerolog/log"
@@ -36,8 +37,8 @@ type Message struct {
 }
 
 // Msg outputs a message
-func (m *Message) Msg(msg string) {
-	m.e.Msg(msg)
+func (m *Message) Msg(format string, args ...interface{}) {
+	m.e.Msg(fmt.Sprintf(format, args...))
 }
 
 // Context adds values from a context to the log message
