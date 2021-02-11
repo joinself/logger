@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	zl "github.com/rs/zerolog/log"
 )
 
 const (
@@ -105,25 +105,25 @@ func logEvent(level int, l L) {
 func buildEvent(level int) *zerolog.Event {
 	switch level {
 	case DEFAULT:
-		return log.Info()
+		return zl.Info()
 	case DEBUG:
-		return log.Debug()
+		return zl.Debug()
 	case INFO:
-		return log.Info()
+		return zl.Info()
 	case NOTICE:
-		return log.Info()
+		return zl.Info()
 	case WARNING:
-		return log.Warn()
+		return zl.Warn()
 	case ERROR:
-		return log.Error()
+		return zl.Error()
 	case CRITICAL:
-		return log.Fatal()
+		return zl.Fatal()
 	case ALERT:
-		return log.Panic()
+		return zl.Panic()
 	case EMERGENCY:
-		return log.Panic()
+		return zl.Panic()
 	default:
-		return log.Info()
+		return zl.Info()
 	}
 }
 
