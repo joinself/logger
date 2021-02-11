@@ -57,6 +57,31 @@ func init() {
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.LevelFieldName = "severity"
+	zerolog.LevelFieldMarshalFunc = func(l zerolog.Level) string {
+		// mapping to Cloud Logging LogSeverity
+		// https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#LogSeverity
+		switch l {
+		case zerolog.TraceLevel:
+			return "DEFAULT"
+		case zerolog.DebugLevel:
+			return "DEBUG"
+		case zerolog.InfoLevel:
+			return "INFO"
+		case zerolog.WarnLevel:
+			return "WARNING"
+		case zerolog.ErrorLevel:
+			return "ERROR"
+		case zerolog.FatalLevel:
+			return "CRITICAL"
+		case zerolog.PanicLevel:
+			return "ALERT"
+		case zerolog.NoLevel:
+			return "DEFAULT"
+		default:
+			return "DEFAULT"
+		}
+	}
+
 }
 
 // SetGlobalLevel sets the global override for log level. If this
