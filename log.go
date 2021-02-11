@@ -9,26 +9,22 @@ import (
 )
 
 const (
-	// Log levels on GCP (https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#logseverity)
-
-	// DEFAULT logging level.
-	DEFAULT = 0
-	// DEBUG logging level.
-	DEBUG = 100
-	// INFO logging level.
-	INFO = 200
-	// NOTICE logging level.
-	NOTICE = 300
-	// WARNING logging level.
-	WARNING = 400
-	// ERROR logging level.
-	ERROR = 500
-	// CRITICAL logging level.
-	CRITICAL = 600
-	// ALERT logging level.
-	ALERT = 700
-	// EMERGENCY logging level.
-	EMERGENCY = 800
+	// DebugLevel defines debug log level.
+	DebugLevel int = iota
+	// InfoLevel defines info log level.
+	InfoLevel
+	// WarnLevel defines warn log level.
+	WarnLevel
+	// ErrorLevel defines error log level.
+	ErrorLevel
+	// FatalLevel defines fatal log level.
+	FatalLevel
+	// PanicLevel defines panic log level.
+	PanicLevel
+	// NoLevel defines an absent log level.
+	NoLevel
+	// Disabled disables the logger.
+	Disabled
 )
 
 // Message represents a log message
@@ -60,28 +56,28 @@ func (m *Message) Context(ctx context.Context) *Message {
 func init() {
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.LevelFieldName = "severity"
 }
 
 // SetGlobalLevel sets the global override for log level. If this
 // values is raised, all Loggers will use at least this value.
 func SetGlobalLevel(level int) {
-	l := parseLevel(level)
-	zerolog.SetGlobalLevel(l)
+	zerolog.SetGlobalLevel(zerolog.Level(level))
 }
 
 // Debug or trace information.
 func Debug() *Message {
-	return &Message{zl.Debug().Int("severity", DEBUG)}
+	return &Message{zl.Debug()}
 }
 
 // Info routine information, such as ongoing status or performance.
 func Info() *Message {
-	return &Message{zl.Info().Int("severity", INFO)}
+	return &Message{zl.Info()}
 }
 
 // Warn events might cause problems.
 func Warn() *Message {
-	return &Message{zl.Warn().Int("severity", WARNING)}
+	return &Message{zl.Warn()}
 }
 
 // Warning events might cause problems.
@@ -91,41 +87,15 @@ func Warning() *Message {
 
 // Error events are likely to cause problems.
 func Error() *Message {
-	return &Message{zl.Error().Int("severity", ERROR)}
+	return &Message{zl.Error()}
 }
 
 // Fatal critical events cause more severe problems or outages.
 func Fatal() *Message {
-	return &Message{zl.Fatal().Int("severity", CRITICAL)}
+	return &Message{zl.Fatal()}
 }
 
 // Panic a person must take an action immediately.
 func Panic() *Message {
-	return &Message{zl.Panic().Int("severity", ALERT)}
-}
-
-func parseLevel(level int) zerolog.Level {
-	switch level {
-	case DEFAULT:
-		return zerolog.InfoLevel
-	case DEBUG:
-		return zerolog.DebugLevel
-	case INFO:
-		return zerolog.InfoLevel
-	case NOTICE:
-		return zerolog.InfoLevel
-	case WARNING:
-		return zerolog.WarnLevel
-	case ERROR:
-		return zerolog.ErrorLevel
-	case CRITICAL:
-		return zerolog.FatalLevel
-	case ALERT:
-		return zerolog.PanicLevel
-	case EMERGENCY:
-		return zerolog.PanicLevel
-	default:
-		return zerolog.InfoLevel
-	}
-
+	return &Message{zl.Panic()}
 }
