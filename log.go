@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/rs/zerolog"
 	zl "github.com/rs/zerolog/log"
@@ -79,6 +80,16 @@ func init() {
 			return "DEFAULT"
 		default:
 			return "DEFAULT"
+		}
+	}
+
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	if os.Getenv("LOG_LEVEL") != "" {
+		level, err := zerolog.ParseLevel(os.Getenv("LOG_LEVEL"))
+		if err != nil {
+			Warn().Msg("invalid log level (" + os.Getenv("LOG_LEVEL") + "), defaulting to [INFO]")
+		} else {
+			zerolog.SetGlobalLevel(level)
 		}
 	}
 
