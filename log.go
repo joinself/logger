@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/rs/zerolog"
 	zl "github.com/rs/zerolog/log"
@@ -85,7 +86,7 @@ func init() {
 
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if os.Getenv("LOG_LEVEL") != "" {
-		level, err := zerolog.ParseLevel(os.Getenv("LOG_LEVEL"))
+		level, err := zerolog.ParseLevel(strings.ToUpper(os.Getenv("LOG_LEVEL")))
 		if err != nil {
 			Warn().Msg("invalid log level (" + os.Getenv("LOG_LEVEL") + "), defaulting to [INFO]")
 		} else {
