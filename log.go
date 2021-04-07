@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog"
 	zl "github.com/rs/zerolog/log"
@@ -57,7 +58,7 @@ func (m *Message) Context(ctx context.Context) *Message {
 // New creates a new Logger.
 func init() {
 	zerolog.TimestampFieldName = "timestamp"
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.LevelFieldName = "severity"
 	zerolog.LevelFieldMarshalFunc = func(l zerolog.Level) string {
 		// mapping to Cloud Logging LogSeverity
