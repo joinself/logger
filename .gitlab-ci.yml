@@ -1,0 +1,29 @@
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - checks
+
+before_script:
+  - export SCRIPTS_DIR=$(mktemp -d)
+  - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
+
+license:
+  stage: checks
+  image: licensefinder/license_finder
+  script:
+    - ${SCRIPTS_DIR}/git-setup
+    - ${SCRIPTS_DIR}/license-check
+  only:
+    - branches
+
+secrets:
+  stage: checks
+  image: docker:stable-git
+  services:
+    - docker:19.03.2-dind
+  script:
+    - ${SCRIPTS_DIR}/git-secrets
+  only:
+    - branches
