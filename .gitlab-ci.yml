@@ -22,7 +22,7 @@ secrets:
   stage: checks
   image: docker:stable-git
   services:
-    - docker:19.03.2-dind
+    - docker:20.10.12-dind
   script:
     - ${SCRIPTS_DIR}/git-secrets
   only:
