@@ -5,6 +5,11 @@ variables:
 stages:
   - checks
 
+.rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE =~ /external_pull_request_event|web/
+
 before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
@@ -15,8 +20,8 @@ license:
   script:
     - ${SCRIPTS_DIR}/git-setup
     - ${SCRIPTS_DIR}/license-check
-  only:
-    - branches
+  rules:
+    - !reference [.rules, rules]
 
 secrets:
   stage: checks
@@ -25,5 +30,5 @@ secrets:
     - docker:20.10.12-dind
   script:
     - ${SCRIPTS_DIR}/git-secrets
-  only:
-    - branches
+  rules:
+    - !reference [.rules, rules]
