@@ -13,17 +13,16 @@ before_script:
   - export SCRIPTS_DIR=$(mktemp -d)
   - git clone -q --depth 1 "${SCRIPTS_REPO}" "${SCRIPTS_DIR}"
 
-license:
+license-compliance:
   stage: checks
   image: licensefinder/license_finder
   script:
-    - ${SCRIPTS_DIR}/git-setup
     - ${SCRIPTS_DIR}/license-check
 
-secrets:
+secret-scan:
   stage: checks
-  image: docker:stable-git
-  services:
-    - docker:20.10.12-dind
+  image:
+    name: zricethezav/gitleaks:v8.2.4
+    entrypoint: [""]
   script:
-    - ${SCRIPTS_DIR}/git-secrets
+    - ${SCRIPTS_DIR}/git-secret-scan
