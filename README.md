@@ -1,5 +1,7 @@
 # Logger
 
+[![CI](https://github.com/joinself/logger/actions/workflows/ci.yml/badge.svg)](https://github.com/joinself/logger/actions/workflows/ci.yml)
+
 Self logger provides a layer on top of [zerolog](https://github.com/rs/zerolog) to initialize it and provide helper functions to easily manage your logging.
 
 
@@ -32,4 +34,3 @@ func main() {
 }
 
 ```
-
